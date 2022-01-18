@@ -1,0 +1,376 @@
+﻿@model Kindergarten.MentorContext
+@{
+    ViewData["Title"] = "Добавление новой группы";
+
+
+    var mentorInfo = $"{Model.Mentor.SecondName} {Model.Mentor.FirstName[0]}.";
+    if (!string.IsNullOrEmpty(Model.Mentor.Patronymic))
+    {
+        mentorInfo += $"{Model.Mentor.Patronymic[0]}.";
+    }
+
+    ViewData["MentorRole"] = Model.Mentor.Role.Name;
+    ViewData["MentorFCs"] = mentorInfo;
+
+    await Html.RenderPartialAsync("_Header");
+}
+
+@{
+    mentorInfo = $"{Model.Mentor.SecondName} {Model.Mentor.FirstName[0]}.";
+    if (!string.IsNullOrEmpty(Model.Mentor.Patronymic))
+    {
+        mentorInfo += $"{Model.Mentor.Patronymic[0]}.";
+    }
+}
+
+<style>
+    .title {
+        margin-left: 36.5vw;
+        margin-top: 2vh;
+        margin-bottom: 2vh;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: 900;
+        font-size: 4.25vh;
+        line-height: 5vh;
+        letter-spacing: 0.25px;
+        color: rgba(0, 0, 0, 0.87);
+    }
+    form {
+        width: 30vw;
+        margin-left: 35vw;
+        background: rgba(24, 103, 192, 0.2);
+        border-radius: 8px;
+    }
+    .mentor-title {
+        margin-top: 2vh;
+        padding-left: 1vw;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 2vh;
+        line-height: 2.5vh;
+        letter-spacing: 0.15px;
+        color: rgba(0, 0, 0, 0.6);
+    }
+
+    .mentor {
+        margin-left: 1vw;
+        width: 28vw;
+        height: 5vh;
+        background: #FFFFFF;
+        box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.12), 0px 2px 2px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 2vh;
+        line-height: 2.5vh;
+        color: rgba(0, 0, 0, 0.87);
+    }
+
+    .mentor-option {
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 2vh;
+        line-height: 2.5vh;
+        color: rgba(0, 0, 0, 0.87);
+        flex: none;
+        order: 0;
+        align-self: stretch;
+        flex-grow: 1;
+        margin: 1.1vh;
+    }
+    .age {
+        margin-left: 1.45vh;
+        margin-top: 1vh;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 2vh;
+        line-height: 2.375vh;
+        letter-spacing: 0.15px;
+        color: rgba(0, 0, 0, 0.6);
+    }
+
+    .children-count {
+        margin-left: 1.45vh;
+        margin-top: 1vh;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 2vh;
+        line-height: 2.375vh;
+        letter-spacing: 0.15px;
+        color: rgba(0, 0, 0, 0.6);
+    }
+
+    .name {
+        margin-top: 0.1rem;
+        margin-bottom: 0.1rem;
+        margin-left: 1.8vw;
+        padding-left: 0vw;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 1.5vh;
+        line-height: 2vh;
+        letter-spacing: 0.15px;
+        color: rgba(0, 0, 0, 0.6);
+    }
+
+    .secondname {
+        margin-top: 0.1rem;
+        margin-bottom: 0.1rem;
+        margin-left: 1.8vw;
+        padding-left: 0vw;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 1.5vh;
+        line-height: 2vh;
+        letter-spacing: 0.15px;
+        color: rgba(0, 0, 0, 0.6);
+    }
+
+    p {
+        margin-top: 0.1rem;
+        margin-bottom: 0.1rem;
+    }
+
+    .page {
+        margin-top: 0.1rem;
+        margin-bottom: 0.1rem;
+        margin-left: 1.8vw;
+        padding-left: 0vw;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 1.5vh;
+        line-height: 2vh;
+        letter-spacing: 0.15px;
+        color: rgba(0, 0, 0, 0.6);
+    }
+
+    .childInput {
+        width: 200px;
+        margin-left: 1.8vw;
+        margin-bottom: 0.8vw
+    }
+
+    #inputcols {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .save {
+        margin-top: 2vh;
+        margin-bottom: 1vw;
+        width: 11.1vw;
+        height: 5vh;
+        margin-left: 9.45vw;
+        background: #8BC34A;
+        box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.12), 0px 0px 0px rgba(0, 0, 0, 0.14), 0px 0px 0px rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 2vh;
+        line-height: 2.5vh;
+        letter-spacing: 1.25px;
+        text-transform: uppercase;
+        color: #FFFFFF;
+        flex: none;
+        order: 0;
+        flex-grow: 0;
+    }
+</style>
+
+<div class="row">
+    <div class="col">
+        <div class="row">
+            <p class="title">Добавление новой группы</p>
+        </div>
+    </div>
+</div>
+<form method="post" asp-controller="Account" asp-action="GroupAdd">
+    <input name="contect" type="hidden" value="@Model" />
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col" style="padding-top: 2vh;">
+                    <a class="mentor-title">Название группы</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <input id="groupName" class="mentor" name="groupName" type="text" value="" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col" style="padding-top: 2vh;">
+                    <a class="mentor-title">Путь до иконки</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <input id="iconPath" class="mentor" name="iconPath" type="text" value="" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col" style="padding-top: 2vh;">
+                    <a class="mentor-title">Воспитатель</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <select id="mentor" name="mentor" class="mentor" size="1">
+                        @foreach (var user in Kindergarten.Helpers.Database.Users.Where(x => x.Role.Id == 4))
+                        {
+                            var userInfo = $"{user.SecondName} {user.FirstName[0]}.";
+                            <option class="mentor-option" value="@user.Id">@userInfo</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col" style="padding-top: 2vh;">
+                    <a class="mentor-title">Тип группы</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <select id="grouptype" name="grouptype" class="mentor" size="1">
+                        @foreach (var grouptype in Kindergarten.Helpers.Database.GroupTypes)
+                        {
+                            <option class="mentor-option" value="@grouptype.Id">@grouptype.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="row" style="padding-top: 2vh;">
+                <div class="col">
+                    <a class="mentor-title">Количество детей в группе</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <input id="childrenCount" class="mentor" name="childrenCount" type="text" value="0" oninput="count_change()" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="row" style="padding-top: 2vh;">
+                <div class="col">
+                    <a class="mentor-title">Имена, фамилии и возраста детей</a>
+                </div>
+            </div>
+            <div class="row">
+                <div id="childrenInputs" class="col">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    function count_change() {
+        var count = Number(childrenCount.value);
+
+        while (childrenInputs.firstChild) {
+            childrenInputs.removeChild(childrenInputs.firstChild);
+        }
+
+        for (var i = 0; i < count; i++) {
+            var row = document.createElement("div");
+            row.className = "row";
+
+            var col1 = document.createElement("div");
+            col1.className = "col";
+            col1.id = "inputcols";
+
+            var p1 = document.createElement("p");
+            p1.textContent = "Имя ";
+            p1.className = "name";
+            var firstname = document.createElement("input");
+            firstname.className = "childInput";
+            firstname.setAttribute("name", "childfirstname");
+            firstname.style.width = "200px";
+            //p1.appendChild(firstname);
+
+            col1.appendChild(p1);
+
+            col1.appendChild(firstname);
+
+            row.appendChild(col1);
+
+            var col2 = document.createElement("div");
+            col2.className = "col";
+            col2.id = "inputcols";
+            //col2.style.marginLeft = "30px";
+
+            var p2 = document.createElement("p");
+            p2.textContent = "Фамилия ";
+            p2.className = "secondname";
+            var secondname = document.createElement("input");
+            secondname.className = "childInput";
+            secondname.setAttribute("name", "childsecondname")
+            secondname.style.width = "200px";
+            //p2.appendChild(secondname);
+
+            col2.appendChild(p2);
+
+            col2.appendChild(secondname);
+
+            row.appendChild(col2);
+
+            var col3 = document.createElement("div");
+            col3.className = "col";
+            col3.id = "inputcols";
+
+            var p3 = document.createElement("p");
+            p3.textContent = "Возраст ";
+            p3.className = "page";
+            var age = document.createElement("input");
+            age.className = "childInput";
+            age.setAttribute("name", "age");
+            age.style.width = "200px";
+            //p3.appendChild(age);
+
+            col3.appendChild(p3);
+
+            col3.appendChild(age);
+
+            row.appendChild(col3);
+
+            childrenInputs.appendChild(row);
+        }
+
+        if (count > 0) {
+            var button = document.createElement("input");
+            button.className = "save";
+            button.type = "submit";
+            button.value = "ГОТОВО";
+            childrenInputs.appendChild(button);
+        }
+    }
+</script>

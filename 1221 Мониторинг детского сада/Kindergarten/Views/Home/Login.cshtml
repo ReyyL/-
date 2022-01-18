@@ -1,0 +1,83 @@
+﻿@model Kindergarten.Models.User
+@{
+    ViewData["Title"] = "Авторизация";
+}
+<style>
+    .user-input {
+        width: 30vw;
+        height: 7vh;
+        margin-top: 2vh;
+        border: 4px;
+        box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.12), 0px 2px 2px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.2);
+        padding: 1vw;
+        font-size: 2vh;
+        font-style: normal;
+        font-weight: normal;
+        font-family: Roboto;
+    }
+
+        .user-input::placeholder {
+            color: rgba(0, 0, 0, 0.87);
+            font-size: 2vh;
+            font-style: normal;
+            font-weight: normal;
+            font-family: Roboto;
+        }
+
+    #validation-text {
+        width: 30vw;
+        height: 7vh;
+        font-size: 2.25vh;
+        font-weight: bold;
+        font-style: normal;
+    }
+
+    .button {
+        margin-top: 4vh;
+        width: 10.4vw;
+        height: 5.5vh;
+        border-radius: 4px;
+        border: #1976D2 solid;
+        background-color: #1976D2;
+        color: white;
+        box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.12), 0px 0px 0px rgba(0, 0, 0, 0.14), 0px 0px 0px rgba(0, 0, 0, 0.2);
+        font-size: 1.75vh;
+    }
+
+    #logo {
+        height: 9.5vh;
+        width: 5.27vw;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    #title {
+        font-size: 4.25vh;
+        font-weight: bold;
+        font-style: normal;
+        color: #1867C0;
+        width: 18.6vw;
+        height: 9.5vh;
+        display: inline-block;
+        vertical-align: middle;
+    }
+</style>
+<form method="post" runat="server" style="padding-left: 0; padding-top: 0;">
+    <div style="margin-top: 29.3vh; margin-left: 36.52vw; ">
+        <img id="logo" src="/img/children.svg" />
+        <h1 id="title" align="center">Мониторинг для детского сада</h1>
+    </div>
+    <div align="center" style="margin-top: 6.5vh; ">
+        <span id="validation-text" asp-validation-for="Login" class="text-danger"></span>
+        <br />
+        <input class="user-input" type="text" name="login" placeholder="Логин" runat="server" value="@Model.Login" />
+        <br />
+        <input class="user-input" type="password" name="password" placeholder="Пароль" runat="server" style="" />
+        <br />
+        <input class="button" type="submit" value="ВХОД" />
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

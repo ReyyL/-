@@ -1,0 +1,391 @@
+﻿@model Kindergarten.Contexts.GroupContext
+@{
+    ViewData["Title"] = Model.Group.Name;
+
+
+    var mentorInfo = $"{Model.User.SecondName} {Model.User.FirstName[0]}.";
+    if (!string.IsNullOrEmpty(Model.User.Patronymic))
+    {
+        mentorInfo += $"{Model.User.Patronymic[0]}.";
+    }
+
+    ViewData["MentorRole"] = Model.User.Role.Name;
+    ViewData["MentorFCs"] = mentorInfo;
+
+    await Html.RenderPartialAsync("_Header");
+}
+
+@{
+    mentorInfo = $"{Model.Group.Mentor.SecondName} {Model.Group.Mentor.FirstName[0]}.";
+    if (!string.IsNullOrEmpty(Model.Group.Mentor.Patronymic))
+    {
+        mentorInfo += $"{Model.Group.Mentor.Patronymic[0]}.";
+    }
+}
+
+<style>
+    .icon {
+        width: 3.33vw;
+        height: 6vh;
+        margin-left: 7.5vw;
+        margin-top: 3.375vh;
+    }
+
+    .title {
+        margin-left: 1.11vw;
+        margin-top: 4.875vh;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: 900;
+        font-size: 4.25vh;
+        line-height: 5vh;
+        letter-spacing: 0.25px;
+        color: rgba(0, 0, 0, 0.87);
+    }
+
+    .mentor {
+        margin-left: 7vw;
+        margin-top: 1vh;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 2vh;
+        line-height: 2.375vh;
+        letter-spacing: 0.15px;
+        color: rgba(0, 0, 0, 0.6);
+    }
+
+    .age {
+        margin-left: 1.45vh;
+        margin-top: 1vh;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 2vh;
+        line-height: 2.375vh;
+        letter-spacing: 0.15px;
+        color: rgba(0, 0, 0, 0.6);
+    }
+
+    .children-count {
+        margin-left: 1.45vh;
+        margin-top: 1vh;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 2vh;
+        line-height: 2.375vh;
+        letter-spacing: 0.15px;
+        color: rgba(0, 0, 0, 0.6);
+    }
+
+    table {
+        margin-left: 7vw;
+        margin-top: 2.125vh;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+        text-align: center;
+    }
+
+    .title-tr {
+        background: rgba(25, 118, 210, 0.15);
+        border-radius: 0.555vh;
+    }
+
+    tr p {
+        margin-top: 2vh;
+    }
+
+    .main-tr {
+        background: rgba(24, 103, 192, 0.05);
+        border-radius: 0.555vh;
+    }
+
+    td:first-child {
+        border-left-style: solid;
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+
+    td:last-child {
+        border-right-style: solid;
+        border-bottom-right-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    td {
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 1.5vh;
+        line-height: 1.75vh;
+        letter-spacing: 0.4px;
+        color: rgba(0, 0, 0, 0.87);
+        width: 10vw;
+        margin-top: 2vh;
+        border: solid 0px #000;
+        border-style: solid none;
+    }
+
+</style>
+
+<div class="row">
+    <div class="col">
+        <div class="row">
+            <img class="icon" src="@Model.Group.IconPath">
+            <p class="title">@Model.Group.Name</p>
+        </div>
+        <div class="row">
+            <p class="mentor">Воспитатель: @mentorInfo</p>
+            <p class="age">Возраст: @Model.Group.AgeDifference</p>
+            <p class="children-count">Кол-во детей: @Model.Group.ChildrenCount</p>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-3.5">
+        <div class="row">
+            <div class="col">
+                <a class="metricgroup-title">Критерий оценивания</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <select id="metricgroup" name="metricgroup" class="metricgroup" size="1" onchange="change_click()">
+                    @if (Model.User.Role.Id == 1)
+                    {
+                        @foreach (var metricgroup in Kindergarten.Helpers.Database.MetricGroups)
+                        {
+                            <option value="@metricgroup.Id">@metricgroup.Name</option>
+                        }
+                    }
+                    else
+                    {
+                        @foreach (var metricgroup in Kindergarten.Helpers.Database.GetMetricGroupByUser(Model.User))
+                        {
+                            <option value="@metricgroup.Id" selected>@metricgroup.Name</option>
+                        }
+                    }
+
+                </select>
+            </div>
+        </div>
+    </div>
+    @if (Model.User.Role.Id != 1)
+    {
+        <div class="col-2.5">
+            <div class="row">
+                <div class="col">
+                    <a class="metricgroup-title" style="margin-left:1.07vw !important">Группа метрик для редактирования</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <select id="metrictype" name="metrictype" class="metricgroup" size="1" style="margin-left:1.07vw !important">
+                        @foreach (var metrictype in Kindergarten.Helpers.Database.MetricTypes.Where(x => x.Group.Id == Model.MetricGroup))
+                        {
+                            <option value="@metrictype.Id">@metrictype.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="col-1.5">
+        <div class="row">
+            <div class="col">
+                <a class="metricgroup-title" style="margin-left:0vw !important;">Период</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <select id="date" name="date" class="metricgroup" size="1" style="margin-left: 0vw !important; width: 6vw;" onchange="change_click()">
+                    <option value="1">Январь</option>
+                    <option value="2">Февраль</option>
+                    <option value="3">Март</option>
+                    <option value="4">Апрель</option>
+                    <option value="5">Май</option>
+                    <option value="6">Июнь</option>
+                    <option value="7">Июль</option>
+                    <option value="8">Август</option>
+                    <option value="9">Сентябрь</option>
+                    <option value="10">Октябрь</option>
+                    <option value="11">Ноябрь</option>
+                    <option value="12">Декабрь</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="col-1.5">
+        <div class="row">
+            <div class="col">
+                <a class="metricgroup-title" style="margin-left:0vw !important">Год</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <select id="year" name="year" class="metricgroup" size="1" style="margin-left: 0vw !important; width: 5vw;" onchange="change_click()">
+                    @for (int i = DateTime.Now.Year - 5; i < DateTime.Now.Year + 2; i++)
+                    {
+                        <option value="@i">@i</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    @if (Model.User.Role.Id == 1)
+    {
+        <div class="col-1.5">
+            <div class="row">
+                <div class="col">
+                    <p></p>
+                </div>
+            </div>
+            <input style="background: #FFC107;" onclick="archive_click()" class="button" type="button" value="АРХИВ">
+        </div>
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <p></p>
+                </div>
+            </div>
+            <input style="background: #1976D2;" onclick="report_click()" class="button" type="button" value="ОТЧЕТ">
+        </div>
+    }
+    else
+    {
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <p></p>
+                </div>
+            </div>
+            <input class="button" type="button" value="РЕДАКТИРОВАТЬ" onclick="edit_click()">
+        </div>
+    }
+
+
+</div>
+<script type="text/javascript" src="/js/tableToExcel.js"></script>
+@if (Model.Averages.Count > 0)
+{
+<table id="mainTable">
+    <tr class="title-tr">
+        <td style="width: 2vw !important; text-align: center;">
+            <p>№</p>
+        </td>
+        <td>
+            <p>ФИ ребенка</p>
+        </td>
+        @foreach (var mark in Model.Averages.First().Value.Keys)
+        {
+            <td>
+                <p>@mark</p>
+            </td>
+        }
+        <td style="width: 5vw !important;">
+            <p>Итоговый балл</p>
+        </td>
+    </tr>
+    @{ var index = 1;}
+    @foreach (var child in Model.Averages.Keys)
+    {
+        var childInfo = $"{child.SecondName} {child.FirstName}";
+        float sum = 0;
+        float count = 0;
+        <tr class="main-tr">
+            <td style="width: 2vw !important; text-align: center;">
+                <div class="">
+                    <p>@index</p>
+                </div>
+            </td>
+            <td>
+                <p>@childInfo</p>
+            </td>
+            @foreach (var mark in Model.Averages[child])
+            {
+                count++;
+                sum += mark.Value;
+                <td>
+                    <p>@mark.Value</p>
+                </td>
+            }
+            @{
+                var result = (float)System.Math.Round(sum / count, 1);
+
+                index++;
+            }
+            <td style="width: 5vw !important;">
+                <p style="color: @Model.Group.GetColor(result);font-size: 2.5vh;">@result</p>
+            </td>
+        </tr>
+    }
+<tr class="main-tr">
+    <td style="width: 2vw !important; text-align: center;">
+        <p></p>
+    </td>
+    <td>
+        <p></p>
+    </td>
+    @for (int i = 0; i < Model.Averages.First().Value.Keys.Count - 1; i++)
+    {
+        <td>
+            <p></p>
+        </td>
+    }
+    @{ 
+        var average = Math.Round(Model.Averages.Values.Average(x => x.Values.Average()), 1);
+    }
+    <td>
+        <p>Ср. значение</p>
+    </td>
+    <td style="width: 5vw !important;">
+        <p style="color: @Model.Group.GetColor((float)average);font-size: 2.5vh;">@average</p>
+    </td>
+</tr>
+</table>
+}
+else
+{
+<p class="mentor">Нет записей в данный период!</p>
+}
+
+<script>
+    date.value = @Model.Date.Month;
+    metricgroup.value = @Model.MetricGroup;
+    year.value = @Model.Date.Year;
+    var clicked = false;
+
+    function load_ended() {
+        clicked = false;
+    }
+
+    function change_click() {
+        if (clicked == false) {
+            clicked = true;
+            setTimeout(load_ended, 5000);
+            document.location = "/Account/Group/{i}?month={j}&metric={k}&year={o}".replace('{i}', @Model.Group.Id).replace('{j}', date.value).replace('{k}', metricgroup.value).replace('{o}', year.value);
+        }
+    }
+    function report_click() {
+        if (clicked == false) {
+            clicked = true;
+            setTimeout(load_ended, 5000);
+            document.location = "/Account/ExportToExcel/{i}?month={j}&metric={k}&year={o}".replace('{i}', @Model.Group.Id).replace('{j}', date.value).replace('{k}', metricgroup.value).replace('{o}', year.value);
+        }
+    }
+    function archive_click() {
+        if (clicked == false) {
+            clicked = true;
+            setTimeout(load_ended, 5000);
+            document.location = "/Account/ExportToExcel/{i}?month={j}&metric={k}&year={o}&exists=false".replace('{i}', @Model.Group.Id).replace('{j}', date.value).replace('{k}', metricgroup.value).replace('{o}', year.value);
+        }
+    }
+    function edit_click() {
+        if (clicked == false) {
+            clicked = true;
+            setTimeout(load_ended, 5000);
+            document.location = "/Account/GroupEdit/{i}?month={j}&metric={k}&year={o}&metrictype={z}".replace('{i}', @Model.Group.Id).replace('{j}', date.value).replace('{k}', metricgroup.value).replace('{o}', year.value).replace('{z}', metrictype.value);
+        }
+    }
+</script>

@@ -1,0 +1,407 @@
+﻿@model MentorContext
+@{
+    ViewData["Title"] = "Личный кабинет";
+
+
+    var mentorInfo = $"{Model.Mentor.SecondName} {Model.Mentor.FirstName[0]}.";
+    if (!string.IsNullOrEmpty(Model.Mentor.Patronymic))
+    {
+        mentorInfo += $"{Model.Mentor.Patronymic[0]}.";
+    }
+
+    ViewData["MentorRole"] = Model.Mentor.Role.Name;
+    ViewData["MentorFCs"] = mentorInfo;
+
+    await Html.RenderPartialAsync("_Header");
+}
+<meta charset='utf-8'>
+<style>
+    .groups-title {
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: 900;
+        font-size: 4.25vh;
+        line-height: 5vh;
+        letter-spacing: 0.03125vh;
+        color: rgba(0, 0, 0, 0.87);
+        margin-top: 7vh;
+        margin-bottom: 3vh;
+        margin-left: 9.5vw;
+    }
+
+    .type-text {
+        color: rgba(0, 0, 0, 0.6);
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 2vh;
+        line-height: 2.37vh;
+        letter-spacing: 0.01875vh;
+        margin-left: 9.5vw;
+        padding-top: 3vh;
+    }
+
+    .group {
+        box-shadow: 0px 1px 18px rgba(0, 0, 0, 0.12), 0px 6px 10px rgba(0, 0, 0, 0.14), 0px 3px 5px -1px rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+        height: 16vh;
+        width: 25vw;
+        margin-left: 9.5vw;
+        margin-top: 2vh;
+    }
+
+    .group-icon {
+        height: 3vh;
+        width: 1.6vw;
+        margin-left: 1.11vw;
+        margin-top: 1.125vh;
+    }
+
+    .group-name {
+        height: 3vh;
+        margin-left: 0.34vw;
+        margin-top: 1.5vh;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 2vh;
+        line-height: 2.37vh;
+        letter-spacing: 0.0625vh;
+        color: #263238;
+        margin-bottom: 0;
+    }
+
+    .group-mentor {
+        font-family: Inter;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 1.75vh;
+        line-height: 2.5vh;
+        letter-spacing: 0.005em;
+        color: #263238;
+        opacity: 0.8;
+        padding-top: 1vh;
+        margin-bottom: 0;
+        margin-left: 1.11vw;
+    }
+
+    .group-children-count {
+        font-family: Inter;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 1.75vh;
+        line-height: 2.5vh;
+        letter-spacing: 0.005em;
+        color: #263238;
+        opacity: 0.8;
+        padding-top: 0;
+        margin-left: 1.11vw;
+    }
+
+    .group-age-difference {
+        font-family: Inter;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 1.5vh;
+        line-height: 2vh;
+        display: flex;
+        align-items: flex-end;
+        color: rgba(0, 0, 0, 0.6);
+        opacity: 0.54;
+        padding-top: 0;
+        margin-left: 1.11vw;
+        margin-top: -0.6vw;
+    }
+
+    .group-average-mark {
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: 900;
+        font-size: 6vh;
+        line-height: 7vh;
+        text-align: center;
+        margin-top: 4vh;
+        margin-bottom: 0.5vw;
+        height: 35%;
+    }
+
+    .group-average-mark-title {
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 1.5vh;
+        line-height: 1.75vh;
+        text-align: center;
+        letter-spacing: 0.05vh;
+        padding-top: 0;
+    }
+</style>
+<h1 class="groups-title">Группы</h1>
+@{
+    foreach (var type in Model.GroupsByType.Keys)
+    {
+        var groups = Model.GroupsByType[type];
+        var margin = "";
+        var index = 0;
+        <h1 class="type-text">@type.Name</h1>
+        <div class="row">
+            @foreach (var group in groups)
+            {
+                if (index % 3 == 0)
+                {
+                    margin = "";
+                }
+                mentorInfo = $"{group.Mentor.SecondName} {group.Mentor.FirstName[0]}.";
+                if (!string.IsNullOrEmpty(group.Mentor.Patronymic))
+                {
+                    mentorInfo += $"{group.Mentor.Patronymic[0]}.";
+                }
+
+                var averageMark = group.AverageMark;
+                if (Model.Mentor.Role.Id != 1)
+                {
+                    averageMark = group.GetAverageMarkByRole(Model.Mentor.Role);
+                }
+                var avgText = $"{averageMark}".Replace(',', '.');
+
+
+                <div class="col-3" style="@margin">
+                    <div class="group" onclick="record_click(@group.Id)" style="background: linear-gradient(104.19deg, #FFFFFF 39.91%, @group.GetBackgroundColor(averageMark) 100%);">
+                        <div class="row" style="padding:0;">
+                            <div class="col-8">
+                                <div class="row">
+                                    <div class="col-2">
+                                        <img class="group-icon" src="@group.IconPath">
+                                    </div>
+                                    <div class="col">
+                                        <p class="group-name">@group.Name</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <p class="group-mentor">Воспитатель: @mentorInfo</p>
+                                        <p class="group-children-count">Детей в группе: @group.ChildrenCount</p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <p class="group-age-difference">@group.AgeDifference</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4" style="text-align:center;">
+                                <p class="group-average-mark" style="color: @group.GetColor(averageMark)">@avgText</p>
+                                <a class="group-average-mark-title" style="color: @group.GetColor(averageMark) !important">средний балл</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                margin = "margin-left:1.66vw;";
+                index++;
+            }
+        </div>
+    }
+}
+
+@if (Model.Mentor.Role.Id == 1)
+{
+    <div class="row" style="margin-left: 8vw;">
+        <div class="col-2">
+            <div class="row">
+                <div class="col">
+                    <input onclick="group_add()" style="background: #cacaca; width: 12vw; margin-top: 1.6vh; margin-left: 0.9vw;" class="button" type="button" value="Добавить группу"/>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<h1 class="groups-title">Статистика</h1>
+<div class="row" style="margin-left: 8vw;">
+    <div class="col-3">
+        <div class="row">
+            <div class="col">
+                <a class="metricgroup-title" style="margin-left:1.07vw !important">Группа</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <select id="group" name="group" class="metricgroup" size="1" style="margin-left:1.07vw !important" onchange="change_click()" va="@Model.SelectedGroupId">
+                    <option value="-1">Все группы</option>
+                    @foreach (var group in Kindergarten.Helpers.Database.Groups)
+                    {
+                        if (group.Id == Model.SelectedGroupId)
+                        {
+                            <option value="@group.Id" selected="selected">@group.Name</option>
+                        }
+                        else
+
+                        {
+                            <option value="@group.Id">@group.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="col-1">
+        <div class="row">
+            <div class="col">
+                <a class="metricgroup-title" style="margin-left:1.07vw !important">Специалист</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <select id="neededrole" name="neededrole" class="metricgroup" size="1" style="margin-left:1.07vw !important; color:black; width:7vw;" onchange="change_click()" value="@Model.SelectedRoleId">
+                    @foreach (var role in Kindergarten.Helpers.Database.Roles.Where(x => x.Id != 1))
+                    {
+                        if (role.Id == Model.SelectedRoleId)
+                        {
+                            <option value="@role.Id" selected="selected">@role.Name</option>
+                        }
+                        else
+
+                        {
+                            <option value="@role.Id">@role.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="col-3">
+        <div class="row">
+            <div class="col">
+                <a class="metricgroup-title" style="margin-left:1.07vw !important">Таблица</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <select id="metricgroup" name="metricgroup" class="metricgroup" size="1" style="margin-left: 1.07vw !important; " onchange="change_click()" value="@Model.SelectedMetricGroupId">
+                    @foreach (var metricgroup in Kindergarten.Helpers.Database.MetricGroups)
+                    {
+                        if (metricgroup.Id == Model.SelectedMetricGroupId)
+                        {
+                            <option value="@metricgroup.Id" selected="selected">@metricgroup.Name</option>
+                        }
+                        else
+
+                        {
+                            <option value="@metricgroup.Id">@metricgroup.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="col-1">
+        <div class="row">
+            <div class="col">
+                <a class="metricgroup-title" style="margin-left:1.07vw !important">Месяц</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <select id="date" name="date" class="metricgroup" size="1" style="margin-left: 1.07vw !important; width: 5vw;" onchange="change_click()">
+                    <option value="-1">Весь год</option>
+                    <option value="1">Январь</option>
+                    <option value="2">Февраль</option>
+                    <option value="3">Март</option>
+                    <option value="4">Апрель</option>
+                    <option value="5">Май</option>
+                    <option value="6">Июнь</option>
+                    <option value="7">Июль</option>
+                    <option value="8">Август</option>
+                    <option value="9">Сентябрь</option>
+                    <option value="10">Октябрь</option>
+                    <option value="11">Ноябрь</option>
+                    <option value="12">Декабрь</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="col-1" style="width: 10vw;">
+        <div class="row">
+            <div class="col">
+                <a class="metricgroup-title" style="margin-left:1.07vw !important">Год</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <select id="year" name="year" class="metricgroup" size="1" style="margin-left: 1.07vw !important; width: 5vw;" onchange="change_click()" value="@Model.DiagrammaDate.Year">
+                    @for (int i = DateTime.Now.Year - 5; i < DateTime.Now.Year + 2; i++)
+                    {
+                        @if (i == Model.DiagrammaDate.Year)
+                        {
+                            <option value="@i" selected>@i</option>
+                        }
+                        else
+                        {
+                            <option value="@i">@i</option>
+                        }
+
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="row">
+            <div class="col">
+                <input onclick="diagramma_click()" style="background: #1976D2; width: 12vw; margin-top: 1.6vh; margin-left: 0vw;" class="button" type="button" value="Показать диаграмму">
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    window.onload = function () {
+        var chart = new CanvasJS.Chart("chartContainer", {
+            theme: "light2",
+            animationEnabled: true,
+            title: {
+                text: ""
+            },
+            data: [
+                {
+                    type: "column", //change type to bar, line, area, pie, etc
+                    dataPoints: @Html.Raw(ViewBag.DataPoints)
+                }
+            ]
+        });
+        chart.render();
+    };
+</script>
+
+<div class="row">
+    <div class="col">
+        <div id="chartContainer" style="height: 370px; width: 100%;"></div>
+        <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    </div>
+</div>
+
+<script>
+    document.querySelector("#date > option[value='@Model.DiagrammaMonth']").setAttribute("selected", "selected");
+    var clicked = false;
+
+    function record_click(id) {
+        if (clicked == false) {
+            clicked = true;
+            document.location = "/Account/Group/${id}".replace('${id}', id);
+        }
+    }
+    function diagramma_click() {
+        if (clicked == false) {
+            clicked = true;
+            var path = "/Account/DiagrammedIndex/?group={i}&role={j}&metricgroup={k}".replace('{i}', group.value).replace('{j}', neededrole.value).replace('{k}', metricgroup.value);
+            path = path + "&month={l}&year={o}".replace("{l}", date.value).replace("{o}", year.value);
+            document.location = path;
+        }
+    }
+    function group_add() {
+        if (clicked == false) {
+            clicked = true;
+            document.location = "/Account/Group/Add";
+        }
+}
+</script>

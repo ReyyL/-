@@ -1,0 +1,212 @@
+﻿@model Kindergarten.Contexts.GroupContext
+@{
+    ViewData["Title"] = Model.Group.Name + "редактирование";
+
+
+    var mentorInfo = $"{Model.User.SecondName} {Model.User.FirstName[0]}.";
+    if (!string.IsNullOrEmpty(Model.User.Patronymic))
+    {
+        mentorInfo += $"{Model.User.Patronymic[0]}.";
+    }
+
+    ViewData["MentorRole"] = Model.User.Role.Name;
+    ViewData["MentorFCs"] = mentorInfo;
+
+    await Html.RenderPartialAsync("_Header");
+}
+
+@{
+    mentorInfo = $"{Model.Group.Mentor.SecondName} {Model.Group.Mentor.FirstName[0]}.";
+    if (!string.IsNullOrEmpty(Model.Group.Mentor.Patronymic))
+    {
+        mentorInfo += $"{Model.Group.Mentor.Patronymic[0]}.";
+    }
+}
+
+<style>
+    .icon {
+        width: 3.33vw;
+        height: 6vh;
+        margin-left: 7.5vw;
+        margin-top: 3.375vh;
+    }
+
+    .title {
+        margin-left: 1.11vw;
+        margin-top: 4.875vh;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: 900;
+        font-size: 4.25vh;
+        line-height: 5vh;
+        letter-spacing: 0.25px;
+        color: rgba(0, 0, 0, 0.87);
+    }
+
+    .mentor {
+        margin-left: 7.8vw;
+        margin-top: 1vh;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 2vh;
+        line-height: 2.375vh;
+        letter-spacing: 0.15px;
+        color: rgba(0, 0, 0, 0.6);
+    }
+
+    .age {
+        margin-left: 1.45vh;
+        margin-top: 1vh;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 2vh;
+        line-height: 2.375vh;
+        letter-spacing: 0.15px;
+        color: rgba(0, 0, 0, 0.6);
+    }
+
+    .children-count {
+        margin-left: 1.45vh;
+        margin-top: 1vh;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 2vh;
+        line-height: 2.375vh;
+        letter-spacing: 0.15px;
+        color: rgba(0, 0, 0, 0.6);
+    }
+
+    table {
+        margin-left: 7vw;
+        margin-top: 2.125vh;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+        text-align: center;
+    }
+
+    .title-tr {
+        background: rgba(25, 118, 210, 0.15);
+        border-radius: 0.555vh;
+    }
+
+    tr p {
+        margin-top: 2vh;
+    }
+
+    .main-tr {
+        background: rgba(24, 103, 192, 0.05);
+        border-radius: 0.555vh;
+    }
+
+    td:first-child {
+        border-left-style: solid;
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+
+    td:last-child {
+        border-right-style: solid;
+        border-bottom-right-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    td {
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 1.5vh;
+        line-height: 1.75vh;
+        letter-spacing: 0.4px;
+        color: rgba(0, 0, 0, 0.87);
+        width: 10vw;
+        margin-top: 2vh;
+        border: solid 0px #000;
+        border-style: solid none;
+    }
+</style>
+
+<div class="row">
+    <div class="col">
+        <div class="row">
+            <img class="icon" src="@Model.Group.IconPath">
+            <p class="title">@Model.Group.Name</p>
+        </div>
+        <div class="row">
+            <p class="mentor">Воспитатель: @mentorInfo</p>
+            <p class="age">Возраст: @Model.Group.AgeDifference</p>
+            <p class="children-count">Кол-во детей: @Model.Group.ChildrenCount</p>
+        </div>
+    </div>
+</div>
+<form method="post" asp-action="GroupSave" asp-route-id="@Model.Group.Id" asp-route-year="@Model.Date.Year" asp-route-month="@Model.Date.Month" asp-route-metric="@Model.MetricGroup" asp-route-metrictype="@Model.MetricGroupType">
+<input name="contect" type="hidden" value="@Model"/>
+<div class="row">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <p></p>
+            </div>
+        </div>
+        <input class="button" type="submit" value="СОХРАНИТЬ" style="margin-left: 7vw;">
+    </div>
+</div>
+<table id="mainTable">
+    <tr class="title-tr">
+        <td style="width: 2vw !important; text-align: center;">
+            <p>№</p>
+        </td>
+        <td>
+            <p>ФИ ребенка</p>
+        </td>
+        @foreach (var mark in Model.Averages.First().Value.Keys)
+        {
+            <td>
+                <p>@mark</p>
+                <input name="metricNames" type="hidden" value="@mark" />
+            </td>
+        }
+    </tr>
+    @{ var index = 1;}
+    @foreach (var child in Model.Averages.Keys)
+    {
+        var childInfo = $"{child.SecondName} {child.FirstName}";
+        float sum = 0;
+        float count = 0;
+        <tr class="main-tr">
+            <td style="width: 2vw !important; text-align: center;">
+                <div class="">
+                    <p>@index</p>
+                </div>
+            </td>
+            <td>
+                <p name="child">@childInfo</p>
+            </td>
+            @foreach (var mark in Model.Averages[child])
+            {
+                count++;
+                sum += mark.Value;
+                <td>
+                    <input name="mark" type="text" value="@mark.Value" />
+                </td>
+            }
+            @{
+                var result = (float)System.Math.Round(sum / count, 1);
+
+                index++;
+            }
+        </tr>
+    }
+</table>
+</form>
+<script>
+    var clicked = false;
+    function save_click() {
+        if (clicked == false) {
+            var clicked = false;
+            document.location = "/Account/ExportToExcel/{i}?month={j}&metric={k}&year={o}&exists=false".replace('{i}', @Model.Group.Id).replace('{j}', date.value).replace('{k}', metricgroup.value).replace('{o}', year.value);
+        }
+    }
+</script>
